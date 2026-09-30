@@ -201,7 +201,7 @@ marts (`analytics`).
 | Item | Value |
 |---|---|
 | Tool | Power BI Desktop (Windows) |
-| File | `5_power_bi/<report_name>.pbix` |
+| File | `5_power_bi/5_power_bi>.pbix` |
 | Data source | PostgreSQL database `loadsmart_dev`, star schema published by dbt in the `analytics` schema (`fact_load` and the `dim_*` tables) |
 | Delivery | Sent by email **and** committed to this repository |
 
