@@ -47,7 +47,7 @@ Analysis Decision Trail*, which correlates the findings to the project choices.
 ├── 3_python_csv/                   Deliverable 3: Python export to CSV
 │   └── 3_python_csv.ipynb
 ├── 5_power_bi/                     Deliverable 5: Power BI report
-│   └── <report_name>.pbix          (also sent by email)
+│   └── 5_power_bi.pbix          (also sent by email)
 └── README.md                       Deliverable 4: this README (project documentation)
 ```
 
