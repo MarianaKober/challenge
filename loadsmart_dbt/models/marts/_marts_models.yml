@@ -90,7 +90,10 @@ models:
         Default date is delivery_date. A month is to_char(delivery_date, 'YYYY-MM'); no dim_date join is needed.
         Relative periods (last month, last full month, latest): use the dates given in Data facts, never current_date.
         Trend or change over time: one row per month with the metric, plus LAG of the metric ordered by month
-        for the change; never one column per month.
+        for the change; never one column per month. Monthly volume is COUNT(*) of loads per month; the change is the difference of that count against the
+        previous month. Never use a price column for volume. The month is always
+        to_char(fact_load.delivery_date, 'YYYY-MM'); no dimension table has a month column except dim_date,
+        and it is not needed. Do not join tables whose columns are not used in the answer.
         Trend for a top entity: a CTE picks the entity (GROUP BY its id, ORDER BY COUNT(*) DESC, LIMIT 1,
         delivered loads only), then join back to the fact, GROUP BY month, ORDER BY month.
         Joins: fact_load.X_id = dim_X.X_id. Show names (shipper_name, carrier_name), not ids.

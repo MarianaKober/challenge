@@ -1,8 +1,164 @@
-question,generated_sql,answer,error
+question,generated_sql,answer,error,correct,coments,after iteration sql,after iteration answer
+How many loads were delivered in the last full month available in the data?,SELECT COUNT(*) FROM loadsmart_dev.analytics.fact_load WHERE delivery_date >= (SELECT MAX(delivery_date) - INTERVAL '1 month' FROM loadsmart_dev.analytics.fact_load) AND is_delivered = TRUE;,[{'count': 1}],,No,"It consultade the last month, not last full month. Added ful month description in yml dim_date. Didn't work :( Added an extra python function to handle the data logic and pass date to the context. The last moth in the data set is 03/2025. The data logic worked partially, it calculated the last day and took the full previous month, but there were no loads in 02/2025","SELECT COUNT(*) AS loads
+FROM fact_load
+WHERE delivery_date >= DATE '2025-02-01'
+  AND delivery_date < DATE '2025-03-01'
+  AND is_delivered = TRUE;",[{'loads': 0}]
+Which shipper had the highest total book price?,"SELECT 
+  ds.shipper_name,
+  SUM(fl.book_price) AS total_book_price
+FROM 
+  loadsmart_dev.analytics.fact_load fl
+  JOIN loadsmart_dev.analytics.dim_shipper ds ON fl.shipper_id = ds.shipper_id
+GROUP BY 
+  ds.shipper_name
+ORDER BY 
+  total_book_price DESC
+LIMIT 1;","[{'shipper_name': 'Shipper 1249', 'total_book_price': 1915694.16}]", ,Yes,Assuming 'total book price' means the sum., ,
+What is the average book price per load by pickup state?,"SELECT 
+  AVG(NULLIF(fact_load.book_price, 0)) AS average_book_price_per_load,
+  dim_lane.pickup_state
+FROM 
+  loadsmart_dev.analytics.fact_load
+  JOIN loadsmart_dev.analytics.dim_lane ON fact_load.lane_id = dim_lane.lane_id
+GROUP BY 
+  dim_lane.pickup_state;","[{'average_book_price_per_load': 1988.67443196005, 'pickup_state': 'CA'}, {'average_book_price_per_load': 1844.4709090909091, 'pickup_state': 'NH'}, {'average_book_price_per_load': 2334.1228846153845, 'pickup_state': 'OR'}, {'average_book_price_per_load': 672.1008443271768, 'pickup_state': 'TX'}, {'average_book_price_per_load': 1003.4570454545454, 'pickup_state': 'NV'}, {'average_book_price_per_load': 1588.5076470588235, 'pickup_state': 'KY'}, {'average_book_price_per_load': 1916.4803157894737, 'pickup_state': 'OH'}, {'average_book_price_per_load': 1717.4918699186992, 'pickup_state': 'NY'}, {'average_book_price_per_load': 1727.96, 'pickup_state': 'NM'}, {'average_book_price_per_load': 2100.505, 'pickup_state': 'MS'}, {'average_book_price_per_load': 2106.383012048193, 'pickup_state': 'IN'}, {'average_book_price_per_load': 924.49, 'pickup_state': 'WV'}, {'average_book_price_per_load': 1026.9947368421053, 'pickup_state': 'NE'}, {'average_book_price_per_load': 2182.5561417322833, 'pickup_state': 'MO'}, {'average_book_price_per_load': 1532.0960792951541, 'pickup_state': 'FL'}, {'average_book_price_per_load': 2632.866666666667, 'pickup_state': 'AR'}, {'average_book_price_per_load': 667.8711111111111, 'pickup_state': 'CT'}, {'average_book_price_per_load': 2121.4463414634147, 'pickup_state': 'WI'}, {'average_book_price_per_load': 2150.8327102803737, 'pickup_state': 'NC'}, {'average_book_price_per_load': 1199.28, 'pickup_state': 'OK'}, {'average_book_price_per_load': 626.67, 'pickup_state': 'RI'}, {'average_book_price_per_load': 2076.4014285714284, 'pickup_state': 'ID'}, {'average_book_price_per_load': 1266.4133082706767, 'pickup_state': 'GA'}, {'average_book_price_per_load': 2338.185263157895, 'pickup_state': 'MN'}, {'average_book_price_per_load': 1138.3525991189426, 'pickup_state': 'PA'}, {'average_book_price_per_load': 927.3621052631579, 'pickup_state': 'MD'}, {'average_book_price_per_load': 1278.42, 'pickup_state': 'WY'}, {'average_book_price_per_load': 1349.8752941176472, 'pickup_state': 'LA'}, {'average_book_price_per_load': 1989.1116959064327, 'pickup_state': 'IL'}, {'average_book_price_per_load': 1727.701754385965, 'pickup_state': 'TN'}, {'average_book_price_per_load': 1684.6316, 'pickup_state': 'MI'}, {'average_book_price_per_load': 1198.398048780488, 'pickup_state': 'NJ'}, {'average_book_price_per_load': 1297.487131147541, 'pickup_state': 'WA'}, {'average_book_price_per_load': 550.9035443037975, 'pickup_state': 'MA'}, {'average_book_price_per_load': 1106.255357142857, 'pickup_state': 'AL'}, {'average_book_price_per_load': 2528.2314285714288, 'pickup_state': 'IA'}, {'average_book_price_per_load': 1743.8066666666666, 'pickup_state': 'UT'}, {'average_book_price_per_load': 1725.5419672131147, 'pickup_state': 'CO'}, {'average_book_price_per_load': 2872.186987951807, 'pickup_state': 'SC'}, {'average_book_price_per_load': 1480.4966666666667, 'pickup_state': 'VA'}, {'average_book_price_per_load': 2242.4857142857145, 'pickup_state': 'DE'}, {'average_book_price_per_load': 2212.8404545454546, 'pickup_state': 'AZ'}, {'average_book_price_per_load': 1796.464, 'pickup_state': 'KS'}]",,Yes,,,
+What are the top 5 lanes by number of delivered loads?,"SELECT lane_id, COUNT(*) AS num_delivered_loads
+FROM loadsmart_dev.analytics.fact_load
+WHERE is_delivered = TRUE
+GROUP BY lane_id
+ORDER BY num_delivered_loads DESC
+LIMIT 5;","[{'lane_id': 'a309b2d95d9c4215da6d275e1522d19f', 'num_delivered_loads': 882}, {'lane_id': '4e9bc691d8ea296454a14950090ddd3d', 'num_delivered_loads': 150}, {'lane_id': '98887cf5997e3a5045e6ee49360404a2', 'num_delivered_loads': 94}, {'lane_id': '22b908a2d77515314ea16637b4d4a3b9', 'num_delivered_loads': 87}, {'lane_id': 'e5b81f73944793d940ed16ee87ff6cca', 'num_delivered_loads': 72}]",,Yes,,,
+Which carrier moved the most loads into Texas?,"SELECT 
+  dcs.shipper_name,
+  dlc.delivery_state_name,
+  dlc.delivery_city,
+  dlc.delivery_state,
+  dlc.delivery_state_name,
+  dlc.delivery_city,
+  dlc.lane_type,
+  COUNT(DISTINCT fl.loadsmart_id) AS num_loads,
+  SUM(NULLIF(fl.book_price, 0)) AS total_book_price,
+  SUM(NULLIF(fl.source_price, 0)) AS total_source_price,
+  SUM(NULLIF(fl.pnl, 0)) AS total_pnl
+FROM 
+  loadsmart_dev.analytics.fact_load fl
+  JOIN loadsmart_dev.analytics.dim_shipper dcs ON fl.shipper_id = dcs.shipper_id
+  JOIN loadsmart_dev.analytics.dim_lane dlc ON fl.lane_id = dlc.lane_id
+GROUP BY 
+  dcs.shipper_name,
+  dlc.delivery_state_name,
+  dlc.delivery_city,
+  dlc.delivery_state,
+  dlc.delivery_state_name,
+  dlc.delivery_city,
+  dlc.lane_type
+ORDER BY 
+  total_book_price DESC
+LIMIT 1",,,No,Added #rule to not include unwanted columns,"SELECT 
+  c.carrier_name,
+  COUNT(*) AS total_loads
+FROM 
+  loadsmart_dev.analytics.fact_load f
+  JOIN loadsmart_dev.analytics.dim_carrier c ON f.carrier_id = c.carrier_id
+  JOIN loadsmart_dev.analytics.dim_lane l ON f.lane_id = l.lane_id
+WHERE 
+  f.is_delivered = TRUE
+  AND l.delivery_state = 'TX'
+GROUP BY 
+  c.carrier_name
+ORDER BY 
+  total_loads DESC
+LIMIT 1;","[{'carrier_name': 'Carrier 567581', 'total_loads': 188}]"
+How does the average book price compare between intrastate and interstate loads?,"SELECT 
+  NULLIF(AVG(CASE WHEN B.is_intrastate THEN A.book_price ELSE NULL END), 0) AS avg_intrastate_price,
+  NULLIF(AVG(CASE WHEN B.is_intrastate THEN A.book_price ELSE NULL END), 0) AS avg_interstate_price
+FROM 
+  loadsmart_dev.analytics.fact_load A
+  JOIN loadsmart_dev.analytics.dim_lane B ON A.lane_id = B.lane_id
+GROUP BY 
+  B.is_intrastate;","[{'avg_intrastate_price': nan, 'avg_interstate_price': nan}, {'avg_intrastate_price': 634.1361230585425, 'avg_interstate_price': 634.1361230585425}]",,No,"Changed intrastate and interstate to categorical column in the model, add comparation rule on #rules","SELECT 
+  NULLIF(AVG(fact_load.book_price), 0) AS avg_intrastate_price,
+  NULLIF(AVG(fact_load.book_price), 0) AS avg_interstate_price
+FROM 
+  fact_load
+  JOIN dim_lane ON fact_load.lane_id = dim_lane.lane_id
+GROUP BY 
+  dim_lane.lane_type;","[{'avg_intrastate_price': 634.1361230585425, 'avg_interstate_price': 634.1361230585425}, {'avg_intrastate_price': 1882.773526645768, 'avg_interstate_price': 1882.773526645768}]"
+"For the shipper with the most delivered loads, how did monthly volume change across the period covered by the data?","SELECT 
+  ds.shipper_name,
+  AVG(CASE WHEN dl.year_month = '2022-01' THEN fl.book_price ELSE NULL END) AS jan22_avg,
+  AVG(CASE WHEN dl.year_month = '2022-02' THEN fl.book_price ELSE NULL END) AS feb22_avg,
+  AVG(CASE WHEN dl.year_month = '2022-03' THEN fl.book_price ELSE NULL END) AS mar22_avg,
+  AVG(CASE WHEN dl.year_month = '2022-04' THEN fl.book_price ELSE NULL END) AS apr22_avg,
+  AVG(CASE WHEN dl.year_month = '2022-05' THEN fl.book_price ELSE NULL END) AS may22_avg,
+  AVG(CASE WHEN dl.year_month = '2022-06' THEN fl.book_price ELSE NULL END) AS jun22_avg,
+  AVG(CASE WHEN dl.year_month = '2022-07' THEN fl.book_price ELSE NULL END) AS jul22_avg,
+  AVG(CASE WHEN dl.year_month = '2022-08' THEN fl.book_price ELSE NULL END) AS aug22_avg,
+  AVG(CASE WHEN dl.year_month = '2022-09' THEN fl.book_price ELSE NULL END) AS sep22_avg,
+  AVG(CASE WHEN dl.year_month = '2022-10' THEN fl.book_price ELSE NULL END) AS oct22_avg,
+  AVG(CASE WHEN dl.year_month = '2022-11' THEN fl.book_price ELSE NULL END) AS nov22_avg,
+  AVG(CASE WHEN dl.year_month = '2022-12' THEN fl.book_price ELSE NULL END) AS dec22_avg
+FROM 
+  loadsmart_dev.analytics.dim_shipper ds
+  JOIN loadsmart_dev.analytics.fact_load fl ON ds.shipper_id = fl.shipper_id
+  JOIN loadsmart_dev.analytics.dim_date dl ON CAST(fl.delivery_date AS DATE) = dl.date_day
+WHERE 
+  ds.shipper_id = (SELECT shipper_id FROM loadsmart_dev.analytics.fact_load GROUP BY shipper_id ORDER BY COUNT(*) DESC LIMIT 1)
+GROUP BY 
+  ds.shipper_name;","[{'shipper_name': 'Shipper 758', 'jan22_avg': None, 'feb22_avg': None, 'mar22_avg': None, 'apr22_avg': None, 'may22_avg': None, 'jun22_avg': None, 'jul22_avg': None, 'aug22_avg': None, 'sep22_avg': None, 'oct22_avg': None, 'nov22_avg': None, 'dec22_avg': None}]",,No ,Changed ai hints on yml until it got closer,"WITH top_shipper AS (
+  SELECT shipper_id
+  FROM loadsmart_dev.analytics.fact_load
+  WHERE is_delivered = TRUE
+  GROUP BY shipper_id
+  ORDER BY COUNT(*) DESC
+  LIMIT 1
+),
+monthly_volume AS (
+  SELECT 
+    to_char(f.delivery_date, 'YYYY-MM') AS month,
+    COUNT(*) AS volume
+  FROM loadsmart_dev.analytics.fact_load f
+  JOIN top_shipper ts ON f.shipper_id = ts.shipper_id
+  WHERE f.is_delivered = TRUE
+  GROUP BY month
+),
+monthly_change AS (
+  SELECT 
+    month,
+    volume,
+    LAG(volume) OVER (ORDER BY month) AS prev_volume,
+    volume - LAG(volume) OVER (ORDER BY month) AS change
+  FROM monthly_volume
+)
+SELECT 
+  month,
+  volume,
+  change
+FROM monthly_change
+ORDER BY month;","[{'month': '2024-01', 'volume': 126, 'change': nan}, {'month': '2024-02', 'volume': 108, 'change': -18.0}, {'month': '2024-03', 'volume': 177, 'change': 69.0}, {'month': '2024-04', 'volume': 191, 'change': 14.0}, {'month': '2024-05', 'volume': 163, 'change': -28.0}, {'month': '2024-06', 'volume': 165, 'change': 2.0}, {'month': '2024-07', 'volume': 137, 'change': -28.0}, {'month': '2024-08', 'volume': 126, 'change': -11.0}, {'month': '2024-09', 'volume': 137, 'change': 11.0}, {'month': '2024-10', 'volume': 153, 'change': 16.0}, {'month': '2024-11', 'volume': 192, 'change': 39.0}, {'month': '2024-12', 'volume': 116, 'change': -76.0}, {'month': '2025-01', 'volume': 40, 'change': -76.0}, {'month': '2025-03', 'volume': 1, 'change': -39.0}]"
+"Among lanes with at least 10 delivered loads, which had the highest average book price?","SELECT 
+  lane_id,
+  AVG(NULLIF(book_price, 0)) AS avg_book_price
+FROM 
+  loadsmart_dev.analytics.fact_load
+WHERE 
+  is_delivered = TRUE
+  AND book_price IS NOT NULL
+  AND zero_book_price_flag = FALSE
+GROUP BY 
+  lane_id
+HAVING 
+  COUNT(DISTINCT loadsmart_id) >= 10
+ORDER BY 
+  avg_book_price DESC
+LIMIT 1;","[{'lane_id': 'cb643dc4bc3cc9bcede2c003e884ab90', 'avg_book_price': 6800.0}]",,Yes,,,
+What percentage of loads were cancelled?,SELECT CAST(SUM(CASE WHEN load_was_cancelled THEN 1 ELSE 0 END) AS FLOAT) * 100 / COUNT(*) AS cancelled_percentage FROM loadsmart_dev.analytics.fact_load;,[{'cancelled_percentage': 1.089638157894737}],,,"Measures how much planned volume and revenue is lost, which tells the business how big the cancellation problem is. is small. ",,
 Which 5 shippers have the lowest total pnl among delivered loads?,"SELECT s.shipper_name, SUM(f.pnl) AS total_pnl
 FROM loadsmart_dev.analytics.fact_load f
 JOIN loadsmart_dev.analytics.dim_shipper s ON f.shipper_id = s.shipper_id
 WHERE f.is_delivered = TRUE
 GROUP BY s.shipper_name
 ORDER BY total_pnl ASC
-LIMIT 5;","[{'shipper_name': 'Shipper 1528', 'total_pnl': -13549.21}, {'shipper_name': 'Shipper 758', 'total_pnl': -10227.6}, {'shipper_name': 'Shipper 810', 'total_pnl': -3742.08}, {'shipper_name': 'Shipper 1501', 'total_pnl': -3031.94}, {'shipper_name': 'Shipper 1298', 'total_pnl': -2748.18}]",
+LIMIT 5;","[{'shipper_name': 'Shipper 1528', 'total_pnl': -13549.21}, {'shipper_name': 'Shipper 758', 'total_pnl': -10227.6}, {'shipper_name': 'Shipper 810', 'total_pnl': -3742.08}, {'shipper_name': 'Shipper 1501', 'total_pnl': -3031.94}, {'shipper_name': 'Shipper 1298', 'total_pnl': -2748.18}]",,,"It shows which costumers cost the most money,",,
+What percentage of delivered loads were delivered on time?,,,,,"It can't be answered because the appointment and on-time columns were left out of fact_load for having too many inconsistencies, so the change needed is to verify that the appointment data is trustworthy and only then add those columns to the fact.",,
