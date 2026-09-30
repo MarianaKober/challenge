@@ -34,7 +34,7 @@ Analysis Decision Trail*, which correlates the findings to the project choices.
 ```
 .
 ├── 0_data_quality/                 Data quality analysis + decision trail
-│   └── Post_Data_Quality_Analysis_Decision_Trail_-_Data_Exploration_-_Page1_completed.csv
+│   └── Post_Data_Quality_Analysis_Decision_Trail.csv
 ├── loadsmart_dbt/                  Deliverable 1: the dbt project (Postgres)
 │   ├── models/                     staging -> intermediate -> marts
 │   ├── tests/                      singular data tests
