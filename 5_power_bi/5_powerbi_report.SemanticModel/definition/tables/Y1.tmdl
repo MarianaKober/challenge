@@ -1,0 +1,57 @@
+table Y1
+	lineageTag: 19b79732-5cae-4b36-9312-d1f96acf955c
+
+	column Parâmetro
+		lineageTag: 3dd59394-2d18-44b9-9ce3-77e7d1b5bde8
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parâmetro Pedido'
+
+		relatedColumnDetails
+			groupByColumn: 'Parâmetro Campos'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parâmetro Campos'
+		isHidden
+		lineageTag: 3de0602d-6a49-4e65-affb-0f67e13aac43
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parâmetro Pedido'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parâmetro Pedido'
+		isHidden
+		formatString: 0
+		lineageTag: 297f7cbf-b198-40c2-822e-69d7d6a35eaa
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Y1 = calculated
+		mode: import
+		source =
+				{
+				    ("-", TRUE(), 0),
+				     ("Carrier", NAMEOF('analytics dim_carrier'[carrier_name]), 1),
+				    ("Lane", NAMEOF('analytics dim_lane'[lane]), 1),
+				    ("Shipper", NAMEOF('analytics dim_shipper'[shipper_name]), 2),
+				    ("Pick Up State", NAMEOF('analytics dim_lane'[pickup_state]), 3),
+				    ("Delivery State", NAMEOF('analytics dim_lane'[delivery_state]), 5),
+				    ("Pick Up City", NAMEOF('analytics dim_lane'[pickup_city]), 6),
+				    ("Delivery City", NAMEOF('analytics dim_lane'[delivery_city]), 7),
+				    ("Equipament", NAMEOF('analytics dim_equipment'[equipment_type]), 10),
+				    ("Year", NAMEOF('analytics dim_date'[year]), 11),
+				    ("Month", NAMEOF('analytics dim_date'[month]), 12)
+				}
+
+	annotation PBI_Id = 5f81ff7565b24895ae168c9b9171ec6d
+

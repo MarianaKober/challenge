@@ -1,0 +1,202 @@
+[0m11:55:03.269309 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D1D3F76F90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D1D1BBCE10>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D1D6937890>]}
+
+
+============================== 11:55:03.289951 | 8d4e607f-bdd2-4977-b5f7-d0f6be55c674 ==============================
+[0m11:55:03.289951 [info ] [MainThread]: Running with dbt=1.12.5
+[0m11:55:03.290566 [debug] [MainThread]: running dbt with arguments {'static_parser': 'True', 'no_print': 'None', 'version_check': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'maximum_seed_size_mib': '1', 'target_path': 'None', 'printer_width': '80', 'write_json': 'True', 'introspect': 'True', 'log_cache_events': 'False', 'empty': 'None', 'cache_selected_only': 'False', 'log_format': 'default', 'debug': 'False', 'fail_fast': 'False', 'partial_parse': 'True', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'profiles_dir': 'C:\\Users\\mariana.kober_involv\\.dbt', 'indirect_selection': 'eager', 'hints_enabled': 'True', 'invocation_command': 'dbt init loadsmart_dbt', 'use_experimental_parser': 'False', 'use_colors': 'True', 'log_path': 'logs'}
+[0m11:55:03.439767 [info ] [MainThread]: Creating dbt configuration folder at C:\Users\mariana.kober_involv\.dbt
+[0m11:55:03.443859 [debug] [MainThread]: Starter project path: C:\Users\mariana.kober_involv\challenge\.venv\Lib\site-packages\dbt\include\starter_project
+[0m11:55:03.497318 [info ] [MainThread]: Setting up your profile.
+[0m11:57:18.405892 [info ] [MainThread]: Profile loadsmart_dbt written to C:\Users\mariana.kober_involv\.dbt\profiles.yml using target's profile_template.yml and your supplied values.
+[0m11:57:18.418007 [info ] [MainThread]: Running dbt debug to validate the project...
+[0m11:57:18.418623 [info ] [MainThread]: dbt version: 1.12.5
+[0m11:57:18.418950 [info ] [MainThread]: python version: 3.14.7
+[0m11:57:18.419209 [info ] [MainThread]: python path: C:\Users\mariana.kober_involv\challenge\.venv\Scripts\python.exe
+[0m11:57:18.419466 [info ] [MainThread]: os info: Windows-11-10.0.26200-SP0
+[0m11:57:18.439947 [info ] [MainThread]: Using profiles dir at C:\Users\mariana.kober_involv\.dbt
+[0m11:57:18.440581 [info ] [MainThread]: Using profiles.yml file at C:\Users\mariana.kober_involv\.dbt\profiles.yml
+[0m11:57:18.441038 [info ] [MainThread]: Using dbt_project.yml file at C:\Users\mariana.kober_involv\challenge\loadsmart_dbt\dbt_project.yml
+[0m11:57:18.443578 [info ] [MainThread]: adapter type: postgres
+[0m11:57:18.444034 [info ] [MainThread]: adapter version: 1.11.0
+[0m11:57:18.530010 [info ] [MainThread]: Configuration:
+[0m11:57:18.530757 [info ] [MainThread]:   profiles.yml file [[32mOK found and valid[0m]
+[0m11:57:18.531500 [info ] [MainThread]:   dbt_project.yml file [[32mOK found and valid[0m]
+[0m11:57:18.532016 [info ] [MainThread]: Required dependencies:
+[0m11:57:18.532464 [debug] [MainThread]: Executing "git --help"
+[0m11:57:18.535351 [info ] [MainThread]:  - git [[31mERROR[0m]
+
+[0m11:57:18.535768 [info ] [MainThread]: Connection:
+[0m11:57:18.536066 [info ] [MainThread]:   host: localhost
+[0m11:57:18.536319 [info ] [MainThread]:   port: 5432
+[0m11:57:18.536558 [info ] [MainThread]:   user: postgres
+[0m11:57:18.536794 [info ] [MainThread]:   database: loadsmart_dev
+[0m11:57:18.537025 [info ] [MainThread]:   schema: analytics
+[0m11:57:18.537259 [info ] [MainThread]:   connect_timeout: 10
+[0m11:57:18.537488 [info ] [MainThread]:   role: None
+[0m11:57:18.537715 [info ] [MainThread]:   search_path: None
+[0m11:57:18.537944 [info ] [MainThread]:   keepalives_idle: 0
+[0m11:57:18.538167 [info ] [MainThread]:   sslmode: None
+[0m11:57:18.538391 [info ] [MainThread]:   sslcert: None
+[0m11:57:18.538618 [info ] [MainThread]:   sslkey: None
+[0m11:57:18.538839 [info ] [MainThread]:   sslrootcert: None
+[0m11:57:18.539101 [info ] [MainThread]:   application_name: dbt
+[0m11:57:18.539333 [info ] [MainThread]:   autocommit: False
+[0m11:57:18.539553 [info ] [MainThread]:   retries: 1
+[0m11:57:18.539914 [info ] [MainThread]: Registered adapter: postgres=1.11.0
+[0m11:57:18.877144 [debug] [MainThread]: Acquiring new postgres connection 'debug'
+[0m11:57:20.628333 [debug] [MainThread]: Using postgres connection "debug"
+[0m11:57:20.628683 [debug] [MainThread]: On debug: select 1 as id
+[0m11:57:20.628900 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m11:57:20.714550 [debug] [MainThread]: SQL status: SELECT 1 in 0.086 seconds
+[0m11:57:20.715297 [debug] [MainThread]: On debug: Close
+[0m11:57:20.715626 [info ] [MainThread]:   Connection test: [[32mOK connection ok[0m]
+
+[0m11:57:20.716114 [info ] [MainThread]: [31m1 check failed:[0m
+[0m11:57:20.716464 [info ] [MainThread]: Error from git --help: Could not find command, ensure it is in the user's PATH and that the user has permissions to run it: "git"
+
+[0m11:57:20.716900 [info ] [MainThread]: Your new dbt project "loadsmart_dbt" was created!
+Initialized new project in C:\Users\mariana.kober_involv\challenge\loadsmart_dbt\loadsmart_dbt
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m11:57:20.717308 [info ] [MainThread]: [31mYour profile may need adjustments. You can find the logs of `dbt debug` above[0m
+[0m11:57:20.718218 [debug] [MainThread]: Command `dbt init` succeeded at 11:57:20.718081 after 137.66 seconds
+[0m11:57:20.718607 [debug] [MainThread]: Connection 'debug' was properly closed.
+[0m11:57:20.718991 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D1D67D5A70>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D1D4BD7770>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D1D4B7CF30>]}
+[0m11:57:20.719410 [debug] [MainThread]: Flushing usage events
+[0m11:57:21.433846 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m13:40:26.848996 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002616FE6D550>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002616D8874D0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000026172807C50>]}
+
+
+============================== 13:40:26.854555 | 0a3c34b1-92aa-41de-a617-f0bd617d3ad3 ==============================
+[0m13:40:26.854555 [info ] [MainThread]: Running with dbt=1.12.5
+[0m13:40:26.855278 [debug] [MainThread]: running dbt with arguments {'maximum_seed_size_mib': '1', 'no_print': 'None', 'version_check': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'static_parser': 'True', 'printer_width': '80', 'write_json': 'True', 'introspect': 'True', 'log_cache_events': 'False', 'empty': 'None', 'cache_selected_only': 'False', 'fail_fast': 'False', 'debug': 'False', 'log_format': 'default', 'profiles_dir': 'C:\\Users\\mariana.kober_involv\\.dbt', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'partial_parse': 'True', 'use_colors': 'True', 'hints_enabled': 'True', 'indirect_selection': 'eager', 'use_experimental_parser': 'False', 'invocation_command': 'dbt docs generate --target dev', 'log_path': 'logs'}
+[0m13:40:26.855803 [error] [MainThread]: [[31mERROR[0m]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path C:\Users\mariana.kober_involv\challenge\dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m13:40:26.856721 [debug] [MainThread]: Command `dbt docs generate` failed at 13:40:26.856613 after 0.25 seconds
+[0m13:40:26.857019 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002617264A8B0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002617283D370>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000026172839E10>]}
+[0m13:40:26.857297 [debug] [MainThread]: Flushing usage events
+[0m13:40:27.792059 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m13:46:22.205905 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001EF01EB9550>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001EF7F8374D0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001EF047FBB10>]}
+
+
+============================== 13:46:22.211250 | 9d3169c4-0646-4eff-8680-be6d239374ff ==============================
+[0m13:46:22.211250 [info ] [MainThread]: Running with dbt=1.12.5
+[0m13:46:22.211887 [debug] [MainThread]: running dbt with arguments {'maximum_seed_size_mib': '1', 'no_print': 'None', 'static_parser': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'version_check': 'True', 'printer_width': '80', 'write_json': 'True', 'empty': 'None', 'log_cache_events': 'False', 'introspect': 'True', 'cache_selected_only': 'False', 'log_format': 'default', 'debug': 'False', 'fail_fast': 'False', 'partial_parse': 'True', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'profiles_dir': 'C:\\Users\\mariana.kober_involv\\.dbt', 'indirect_selection': 'eager', 'hints_enabled': 'True', 'invocation_command': 'dbt init loadsmart_dbt', 'use_experimental_parser': 'False', 'use_colors': 'True', 'log_path': 'logs'}
+[0m13:46:22.237477 [debug] [MainThread]: Starter project path: C:\Users\mariana.kober_involv\challenge\.venv\Lib\site-packages\dbt\include\starter_project
+[0m13:46:22.268147 [info ] [MainThread]: Setting up your profile.
+[0m13:47:28.662899 [info ] [MainThread]: Profile loadsmart_dbt written to C:\Users\mariana.kober_involv\.dbt\profiles.yml using target's profile_template.yml and your supplied values.
+[0m13:47:28.665664 [info ] [MainThread]: Running dbt debug to validate the project...
+[0m13:47:28.666278 [info ] [MainThread]: dbt version: 1.12.5
+[0m13:47:28.666596 [info ] [MainThread]: python version: 3.14.7
+[0m13:47:28.666859 [info ] [MainThread]: python path: C:\Users\mariana.kober_involv\challenge\.venv\Scripts\python.exe
+[0m13:47:28.667107 [info ] [MainThread]: os info: Windows-11-10.0.26200-SP0
+[0m13:47:28.686572 [info ] [MainThread]: Using profiles dir at C:\Users\mariana.kober_involv\.dbt
+[0m13:47:28.687156 [info ] [MainThread]: Using profiles.yml file at C:\Users\mariana.kober_involv\.dbt\profiles.yml
+[0m13:47:28.687556 [info ] [MainThread]: Using dbt_project.yml file at C:\Users\mariana.kober_involv\challenge\loadsmart_dbt\dbt_project.yml
+[0m13:47:28.688328 [info ] [MainThread]: adapter type: postgres
+[0m13:47:28.688709 [info ] [MainThread]: adapter version: 1.11.0
+[0m13:47:28.840157 [info ] [MainThread]: Configuration:
+[0m13:47:28.841099 [info ] [MainThread]:   profiles.yml file [[32mOK found and valid[0m]
+[0m13:47:28.841493 [info ] [MainThread]:   dbt_project.yml file [[32mOK found and valid[0m]
+[0m13:47:28.841953 [info ] [MainThread]: Required dependencies:
+[0m13:47:28.842362 [debug] [MainThread]: Executing "git --help"
+[0m13:47:28.915554 [debug] [MainThread]: STDOUT: "b"usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]\n           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]\n           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--no-lazy-fetch]\n           [--no-optional-locks] [--no-advice] [--bare] [--git-dir=<path>]\n           [--work-tree=<path>] [--namespace=<name>] [--config-env=<name>=<envvar>]\n           <command> [<args>]\n\nThese are common Git commands used in various situations:\n\nstart a working area (see also: git help tutorial)\n   clone      Clone a repository into a new directory\n   init       Create an empty Git repository or reinitialize an existing one\n\nwork on the current change (see also: git help everyday)\n   add        Add file contents to the index\n   mv         Move or rename a file, a directory, or a symlink\n   restore    Restore working tree files\n   rm         Remove files from the working tree and from the index\n\nexamine the history and state (see also: git help revisions)\n   bisect     Use binary search to find the commit that introduced a bug\n   diff       Show changes between commits, commit and working tree, etc\n   grep       Print lines matching a pattern\n   log        Show commit logs\n   show       Show various types of objects\n   status     Show the working tree status\n\ngrow, mark and tweak your common history\n   backfill   Download missing objects in a partial clone\n   branch     List, create, or delete branches\n   commit     Record changes to the repository\n   history    EXPERIMENTAL: Rewrite history\n   merge      Join two or more development histories together\n   rebase     Reapply commits on top of another base tip\n   reset      Set `HEAD` or the index to a known state\n   switch     Switch branches\n   tag        Create, list, delete or verify tags\n\ncollaborate (see also: git help workflows)\n   fetch      Download objects and refs from another repository\n   pull       Fetch from and integrate with another repository or a local branch\n   push       Update remote refs along with associated objects\n\n'git help -a' and 'git help -g' list available subcommands and some\nconcept guides. See 'git help <command>' or 'git help <concept>'\nto read about a specific subcommand or concept.\nSee 'git help git' for an overview of the system.\n""
+[0m13:47:28.916004 [debug] [MainThread]: STDERR: "b''"
+[0m13:47:28.916343 [info ] [MainThread]:  - git [[32mOK found[0m]
+
+[0m13:47:28.916652 [info ] [MainThread]: Connection:
+[0m13:47:28.916950 [info ] [MainThread]:   host: postgres
+[0m13:47:28.917196 [info ] [MainThread]:   port: 5432
+[0m13:47:28.917425 [info ] [MainThread]:   user: postgres
+[0m13:47:28.917657 [info ] [MainThread]:   database: loadsmart_dev
+[0m13:47:28.917893 [info ] [MainThread]:   schema: analytics
+[0m13:47:28.918116 [info ] [MainThread]:   connect_timeout: 10
+[0m13:47:28.918336 [info ] [MainThread]:   role: None
+[0m13:47:28.918553 [info ] [MainThread]:   search_path: None
+[0m13:47:28.918765 [info ] [MainThread]:   keepalives_idle: 0
+[0m13:47:28.918976 [info ] [MainThread]:   sslmode: None
+[0m13:47:28.919186 [info ] [MainThread]:   sslcert: None
+[0m13:47:28.919394 [info ] [MainThread]:   sslkey: None
+[0m13:47:28.919617 [info ] [MainThread]:   sslrootcert: None
+[0m13:47:28.919836 [info ] [MainThread]:   application_name: dbt
+[0m13:47:28.920050 [info ] [MainThread]:   autocommit: False
+[0m13:47:28.920264 [info ] [MainThread]:   retries: 1
+[0m13:47:28.920649 [info ] [MainThread]: Registered adapter: postgres=1.11.0
+[0m13:47:29.210054 [debug] [MainThread]: Acquiring new postgres connection 'debug'
+[0m13:47:29.292214 [debug] [MainThread]: Using postgres connection "debug"
+[0m13:47:29.292526 [debug] [MainThread]: On debug: select 1 as id
+[0m13:47:29.292741 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m13:47:32.008318 [debug] [MainThread]: Postgres adapter: Got a retryable error when attempting to open a postgres connection.
+1 attempts remaining. Retrying in 0 seconds.
+Error:
+could not translate host name "postgres" to address: Name or service not known
+
+[0m13:47:34.312703 [debug] [MainThread]: Postgres adapter: Error running SQL: select 1 as id
+[0m13:47:34.313853 [debug] [MainThread]: Postgres adapter: Rolling back transaction.
+[0m13:47:34.314730 [debug] [MainThread]: On debug: No close available on handle
+[0m13:47:34.315564 [info ] [MainThread]:   Connection test: [[31mERROR[0m]
+
+[0m13:47:34.316940 [info ] [MainThread]: [31m1 check failed:[0m
+[0m13:47:34.318060 [info ] [MainThread]: dbt was unable to connect to the specified database.
+The database returned the following error:
+
+  >Database Error
+  could not translate host name "postgres" to address: Name or service not known
+  
+
+Check your database credentials and try again. For more information, visit:
+https://docs.getdbt.com/docs/configure-your-profile
+
+
+[0m13:47:34.319131 [info ] [MainThread]: Your new dbt project "loadsmart_dbt" was created!
+Initialized new project in C:\Users\mariana.kober_involv\challenge\loadsmart_dbt\loadsmart_dbt
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m13:47:34.320068 [info ] [MainThread]: [31mYour profile may need adjustments. You can find the logs of `dbt debug` above[0m
+[0m13:47:34.321819 [debug] [MainThread]: Command `dbt init` succeeded at 13:47:34.321575 after 72.32 seconds
+[0m13:47:34.322532 [debug] [MainThread]: Connection 'debug' was properly closed.
+[0m13:47:34.323003 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001EF04688B00>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001EF04BF1910>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001EF046345A0>]}
+[0m13:47:34.323278 [debug] [MainThread]: Flushing usage events
+[0m13:47:35.424563 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m10:59:06.446661 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D433209550>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D430C174D0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D435BA3B10>]}
+
+
+============================== 10:59:06.451808 | b2092d85-e203-4a66-b2f2-7795eef09352 ==============================
+[0m10:59:06.451808 [info ] [MainThread]: Running with dbt=1.12.5
+[0m10:59:06.452749 [debug] [MainThread]: running dbt with arguments {'static_parser': 'True', 'no_print': 'None', 'maximum_seed_size_mib': '1', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'version_check': 'True', 'target_path': 'None', 'printer_width': '80', 'write_json': 'True', 'empty': 'False', 'log_cache_events': 'False', 'introspect': 'True', 'cache_selected_only': 'False', 'log_format': 'default', 'debug': 'False', 'fail_fast': 'False', 'profiles_dir': 'C:\\Users\\mariana.kober_involv\\.dbt', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'partial_parse': 'True', 'use_colors': 'True', 'hints_enabled': 'True', 'invocation_command': 'dbt build', 'use_experimental_parser': 'False', 'indirect_selection': 'eager', 'log_path': 'logs'}
+[0m10:59:06.453387 [error] [MainThread]: [[31mERROR[0m]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path C:\Users\mariana.kober_involv\challenge\dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m10:59:06.454222 [debug] [MainThread]: Command `dbt build` failed at 10:59:06.454102 after 0.24 seconds
+[0m10:59:06.454547 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D4359DA780>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D435BD9370>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001D435BD1E10>]}
+[0m10:59:06.455010 [debug] [MainThread]: Flushing usage events
+[0m10:59:07.423289 [debug] [MainThread]: An error was encountered while trying to flush usage events

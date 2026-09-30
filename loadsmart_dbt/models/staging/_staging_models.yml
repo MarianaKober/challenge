@@ -1,0 +1,69 @@
+version: 2
+models:
+  - name: stg_loads
+    description: >
+      One row per loadsmart_id (deduplicated here with DISTINCT ON; duplicate rows were identical across all
+      columns and there is no system column to break ties). Lane separated into city/state. Zeros in
+      book_price, source_price and pnl are kept as they come (book_price = book_price_raw, and so on) and are
+      tracked by zero_*_flag and price_analysis_exclude_flag; nothing is converted to NULL. All quality flags are
+      computed here. has_mobile_app_tracking_1 is not loaded. Only null or blank loadsmart_id values are excluded.
+    columns:
+      - name: loadsmart_id
+        data_tests: [unique, not_null]
+      - name: dup_id_flag
+        description: "True when the id appeared more than once in raw. Not carried to fact_load."
+      - name: dup_id_copies
+        description: "How many raw rows shared this id. Not carried to fact_load."
+      - name: book_price_raw
+        description: "Original book_price from raw (zeros included)."
+      - name: source_price_raw
+        description: "Original source_price from raw (zeros included)."
+      - name: pnl_raw
+        description: "Original pnl from raw (zeros included)."
+      - name: book_price
+        description: "Same value as book_price_raw; zero is kept."
+      - name: source_price
+        description: "Same value as source_price_raw; zero is kept."
+      - name: pnl
+        description: "Same value as pnl_raw; zero is kept."
+      - name: carrier_rating
+        description: "Kept as in the source, zeros included. Not carried to fact_load."
+      - name: has_mobile_app_tracking
+        description: "Only assumes the False value in the source (constant column). Kept in staging; not carried to fact_load."
+        data_tests:
+          - accepted_values:
+              values: [false]
+              quote: false
+              config: {severity: warn}
+      - name: has_macropoint_tracking
+        description: "Tracking flag with no analytical value. Kept in staging; not carried to fact_load."
+      - name: has_edi_tracking
+        description: "Tracking flag with no analytical value. Kept in staging; not carried to fact_load."
+      - name: contracted_load
+        description: "Contract flag with no analytical value. Kept in staging; not carried to fact_load."
+      - name: carrier_on_time_to_pickup
+        description: "Too many inconsistencies with the dates. Kept in staging; not carried to fact_load."
+      - name: carrier_on_time_to_delivery
+        description: "Too many inconsistencies with the dates. Kept in staging; not carried to fact_load."
+      - name: carrier_on_time_overall
+        description: "Too many inconsistencies with the dates. Kept in staging; not carried to fact_load."
+      - name: pickup_appointment_time
+        description: "Too many inconsistencies with the dates. Kept in staging; not carried to fact_load."
+      - name: delivery_appointment_time
+        description: "Too many inconsistencies with the dates. Kept in staging; not carried to fact_load."
+      - name: pickup_after_delivery_flag
+        description: "True when pickup_date is strictly after delivery_date (equal timestamps are not flagged). These loads are excluded from fact_load."
+      - name: pickup_gt_delivery_flag
+        description: "Identical to pickup_after_delivery_flag; int_loads_unique uses it to set the exclusion reason pickup_after_delivery."
+      - name: date_order_flag_count
+        description: "How many of the ten date-order flags are true (all use strict >). Not carried to fact_load."
+      - name: lane_format_invalid_flag
+        description: "True when lane is missing, has no ' -> ' separator, has an empty city or a city with a digit, or a state that is not two letters (states are upper-cased first). These loads are excluded from fact_load."
+      - name: pnl_mismatch_flag
+        description: "True when the reported pnl differs from book_price_raw minus source_price_raw."
+      - name: zero_price_active_flag
+        description: "True when a non-cancelled load has a zero book_price, source_price or pnl."
+      - name: cancelled_nonzero_price_flag
+        description: "True when a cancelled load has a non-zero price or pnl."
+      - name: price_analysis_exclude_flag
+        description: "True when zero_price_active_flag or cancelled_nonzero_price_flag is true; leave these loads out of price statistics."

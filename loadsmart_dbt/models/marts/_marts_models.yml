@@ -1,0 +1,332 @@
+# =============================================================================
+# models/marts/_marts__models.yml  (compact version, tuned for small local LLMs)
+# -----------------------------------------------------------------------------
+# Design rules for this file
+#   * The FIRST sentence of every description is self-contained and short (<= ~100 chars);
+#     the schema-context builder sends only that sentence to the LLM.
+#   * meta.ai_hint     : one short plain-text line of query rules (sent to the LLM).
+#   * meta.synonyms    : comma-separated words users may say (used to pick tables/columns).
+#   * meta.role        : key | date | measure | attribute | flag | count
+#   * meta.group       : flag/count family (outlier, zero_entry, mileage, price, identity)
+#   * severity warn only reports; error blocks the pipeline.
+# Star schema: fact_load (1 row per loadsmart_id) -> dim_shipper, dim_carrier,
+#              dim_lane, dim_equipment, dim_date
+# =============================================================================
+version: 2
+
+models:
+
+  # ===========================================================================
+  - name: dim_lane
+    description: "One row per lane (pickup city and state to delivery city and state)."
+    meta:
+      layer: marts
+      grain: "1 row per pickup and delivery city and state"
+      synonyms: "route, freight lane, corridor, city pair, origin, destination, pickup, pickup state, into, state, states, interstate, intrastate, rota, corredor, estado, origem, destino, alabama, alaska, arizona, arkansas, california, colorado, connecticut, delaware, florida, georgia, hawaii, idaho, illinois, indiana, iowa, kansas, kentucky, louisiana, maine, maryland, massachusetts, michigan, minnesota, mississippi, missouri, montana, nebraska, nevada, new hampshire, new jersey, new mexico, new york, north carolina, north dakota, ohio, oklahoma, oregon, pennsylvania, rhode island, south carolina, south dakota, tennessee, texas, utah, vermont, virginia, washington, west virginia, wisconsin, wyoming, district of columbia"
+      ai_hint: >-
+        Origin words (from, origin, pickup, out of) map to pickup_* columns; destination words
+        (to, into, destination, delivery) map to delivery_* columns. Two letters (TX) match
+        *_state; full names (Texas) match *_state_name. Without a direction, check both.
+        Filter by city and state columns, never by the lane text. Show routes with lane.
+        "By pickup state" means group by pickup_state. Interstate vs intrastate means group by
+        lane_type. Top lanes: group by lane.
+    columns:
+      - name: lane_id
+        description: "Surrogate key."
+        meta: {role: key}
+        data_tests: [unique, not_null]
+      - name: lane
+        description: "Route text such as 'Hood River,OR -> Upper Marlboro,MD'; use it to group or display routes."
+        meta: {role: attribute, synonyms: "route name, lane name, rota"}
+        data_tests: [not_null]
+      - name: pickup_city
+        description: "Origin city."
+        meta: {role: attribute, synonyms: "origin city, from city, cidade de origem"}
+      - name: pickup_state
+        description: "Origin state, 2-letter code such as OR."
+        meta: {role: attribute, synonyms: "origin state code, estado de origem"}
+      - name: pickup_state_name
+        description: "Origin state full name such as Oregon."
+        meta: {role: attribute, synonyms: "origin state name"}
+      - name: delivery_city
+        description: "Destination city."
+        meta: {role: attribute, synonyms: "destination city, to city, cidade de destino"}
+      - name: delivery_state
+        description: "Destination state, 2-letter code such as MD."
+        meta: {role: attribute, synonyms: "destination state code, estado de destino"}
+      - name: delivery_state_name
+        description: "Destination state full name such as Maryland."
+        meta: {role: attribute, synonyms: "destination state name"}
+      - name: lane_type
+        description: "Either 'intrastate' or 'interstate'."
+        meta: {role: attribute, synonyms: "route type, interstate, intrastate"}
+        data_tests:
+          - accepted_values:
+              arguments: {values: ['intrastate', 'interstate']}
+
+  # ===========================================================================
+  - name: fact_load
+    description: >
+      One row per load (loadsmart_id), the central fact table. Delivered means is_delivered = TRUE.
+      Excluded loads: pickup_date strictly after delivery_date, lane not in the format
+      "City,ST -> City,ST". Duplicate ids were collapsed into one. Dropped columns: on-time, appointment and tracking flags,
+      contracted_load. Reasons for exclusions are kept in int_loads_unique.fact_exclusion_reasons.
+      Zeros in book_price, source_price and pnl are kept (not converted to NULL) and flagged by the zero_*_flag columns;
+      price_analysis_exclude_flag marks the loads to leave out of price statistics. Missing values are not imputed
+      (except mileage 0): SQL aggregates ignore NULL, so the effective n of a statistic can be smaller than the row count.
+    meta:
+      layer: marts
+      grain: "1 row per loadsmart_id"
+      synonyms: "loads, shipment, freight, carga, moved, hauled, per load"
+      ai_hint: >-
+        ai_hint: >-
+        Each row is one load. "How many loads", "number of loads" and "volume" all mean COUNT(*) AS loads:
+        return one count column only, never a second count column and never COUNT(DISTINCT ...).
+        Delivered, moved or hauled means is_delivered = TRUE; add it only when the question says so
+        Trend for a top entity: a CTE ranks the entity by grouping by its id only (never by month), ordering by
+        COUNT(*) DESC with LIMIT 1, on delivered loads, and selects only that id. Then join the fact to the CTE on
+        the id (id to id, never an id to a name), filter delivered loads again, GROUP BY month and ORDER BY month.
+        and in every subquery, including rankings. The entity CTE must select only the entity's id (the join key), never its name; join back to the fact on the id.
+        Default date is delivery_date. A month is to_char(delivery_date, 'YYYY-MM'); no dim_date join is needed.
+        Relative periods (last month, last full month, latest): use the dates given in Data facts, never current_date.
+        Trend or change over time: one row per month with the metric, plus LAG of the metric ordered by month
+        for the change; never one column per month.
+        Trend for a top entity: a CTE picks the entity (GROUP BY its id, ORDER BY COUNT(*) DESC, LIMIT 1,
+        delivered loads only), then join back to the fact, GROUP BY month, ORDER BY month.
+        Joins: fact_load.X_id = dim_X.X_id. Show names (shipper_name, carrier_name), not ids.
+        "Per load" means AVG(NULLIF(metric, 0)) over fact_load rows; do not divide by anything.
+        Price averages and medians (book_price, source_price, pnl): ignore zeros with NULLIF(metric, 0)
+        and use only loads with price_analysis_exclude_flag = FALSE.
+        Outliers are included by default; exclude them only when the question says so, by filtering the
+        metric flag (book_price_outlier_flag, source_price_outlier_flag, pnl_outlier_flag) = FALSE.
+        Ignore mileage 0 or NULL in averages.
+        Do not filter on flag columns unless the question mentions them.
+        Minimum volume, when the question asks for one: HAVING COUNT(*) FILTER (WHERE is_delivered) >= 10
+    columns:
+      # ---- keys ------------------------------------------------------------
+      - name: loadsmart_id
+        description: "Business key of the load; unique."
+        meta: {role: key}
+        data_tests: [unique, not_null]
+      - name: shipper_id
+        description: "Foreign key to dim_shipper."
+        meta: {role: key}
+        data_tests:
+          - not_null
+          - relationships:
+              arguments: {to: "ref('dim_shipper')", field: shipper_id}
+      - name: carrier_id
+        description: "Foreign key to dim_carrier."
+        meta: {role: key}
+        data_tests:
+          - not_null
+          - relationships:
+              arguments: {to: "ref('dim_carrier')", field: carrier_id}
+      - name: lane_id
+        description: "Foreign key to dim_lane."
+        meta: {role: key}
+        data_tests:
+          - not_null
+          - relationships:
+              arguments: {to: "ref('dim_lane')", field: lane_id}
+      - name: equipment_id
+        description: "Foreign key to dim_equipment. Never NULL: when the equipment type is unknown it is the surrogate hash of NULL, which has no row in dim_equipment (the warn relationships test counts these loads)."
+        meta: {role: key}
+        data_tests:
+          - relationships:
+              arguments: {to: "ref('dim_equipment')", field: equipment_id}
+              config: {severity: warn}
+
+      # ---- dates (any can be NULL; aggregates ignore NULL) -----------------
+      - name: quote_date
+        description: "When the load was quoted. Can be NULL, so statistics on it may cover fewer loads than the row count."
+        meta: {role: date}
+        data_tests: [{not_null: {config: {severity: warn}}}]
+      - name: book_date
+        description: "When the load was booked. Can be NULL, so statistics on it may cover fewer loads than the row count."
+        meta: {role: date}
+        data_tests: [{not_null: {config: {severity: warn}}}]
+      - name: source_date
+        description: "When a carrier was sourced. Can be NULL, so statistics on it may cover fewer loads than the row count."
+        meta: {role: date}
+        data_tests: [{not_null: {config: {severity: warn}}}]
+      - name: pickup_date
+        description: "When the load was picked up; never after delivery_date (those loads are excluded). Can be NULL, so statistics on it may cover fewer loads than the row count."
+        meta: {role: date}
+        data_tests: [{not_null: {config: {severity: warn}}}]
+      - name: delivery_date
+        description: "When the load was delivered; the default date for time analysis. Can be NULL, so statistics on it may cover fewer loads than the row count."
+        meta: {role: date, synonyms: "entrega, delivered date"}
+        data_tests: [{not_null: {config: {severity: warn}}}]
+
+      # ---- measures (0 in the source became NULL) --------------------------
+      - name: book_price
+        description: "Price charged to the shipper in USD; zero in the source is kept and flagged by zero_book_price_flag. Can be NULL. For averages use price_analysis_exclude_flag = false and book_price <> 0."
+        meta: {role: measure, unit: USD, synonyms: "preço, revenue, receita, price, total book price"}
+        data_tests:
+          - not_null: {config: {severity: warn}}
+          - dbt_utils.accepted_range:
+              arguments: {min_value: 0}
+              config: {severity: warn}
+      - name: source_price
+        description: "Price paid to the carrier in USD; zero in the source is kept and flagged by zero_source_price_flag. Can be NULL. Leave zeros out of averages."
+        meta: {role: measure, unit: USD, synonyms: "cost, custo"}
+        data_tests: [{not_null: {config: {severity: warn}}}]
+      - name: pnl
+        description: "Profit and loss in USD as reported by the source; zero is kept and flagged by zero_pnl_flag. Can be NULL. Leave zeros out of averages."
+        meta: {role: measure, unit: USD, synonyms: "profit, margin, margem, lucro"}
+        data_tests: [{not_null: {config: {severity: warn}}}]
+      - name: pnl_calculated
+        description: "book_price minus source_price; NULL when either is NULL. Not reliable when a price is 0 (see the zero_*_flag columns)."
+        meta: {role: measure, unit: USD}
+      - name: mileage
+        description: "Trip distance in miles; zeros on non-cancelled loads were filled with the lane median (mileage_imputed_flag) and stay 0 when the lane has no other value (mileage_unresolved_flag). Can be NULL. Ignore 0 and NULL in averages."
+        meta: {role: measure, unit: miles, synonyms: "distance, milhagem, distância"}
+        data_tests: [{not_null: {config: {severity: warn}}}]
+      - name: book_price_per_mile
+        description: "book_price divided by mileage in USD per mile; NULL when book_price is NULL or mileage is 0 or NULL."
+        meta: {role: measure, unit: "USD per mile", synonyms: "price per mile, rate per mile"}
+
+      # ---- attributes ------------------------------------------------------
+      - name: sourcing_channel
+        description: "Channel used to source the carrier."
+        meta: {role: attribute}
+      - name: load_booked_autonomously
+        description: "True when the load was booked without human intervention."
+        meta: {role: attribute}
+      - name: load_sourced_autonomously
+        description: "True when the carrier was sourced without human intervention."
+        meta: {role: attribute}
+      - name: load_was_cancelled
+        description: "True when the load was cancelled."
+        meta: {role: attribute, synonyms: "cancelada, cancelled"}
+      - name: is_delivered
+        description: "True when the load was not cancelled."
+        meta: {role: attribute, synonyms: "entregue, delivered"}
+
+      # ---- flags (hidden from the LLM unless the question mentions them) ----
+      - name: zero_book_price_flag
+        description: "True when the raw book_price was 0."
+        meta: {role: flag, group: zero_entry, synonyms: "zero, zerado"}
+      - name: zero_source_price_flag
+        description: "True when the raw source_price was 0."
+        meta: {role: flag, group: zero_entry, synonyms: "zero, zerado"}
+      - name: zero_pnl_flag
+        description: "True when the raw pnl was 0."
+        meta: {role: flag, group: zero_entry, synonyms: "zero, zerado"}
+      - name: zero_mileage_flag
+        description: "True when the raw mileage was 0."
+        meta: {role: flag, group: zero_entry, synonyms: "zero, zerado"}
+      - name: zero_entry_count
+        description: "How many of the four zero flags are true."
+        meta: {role: count, group: zero_entry}
+      - name: mileage_imputed_flag
+        description: "True when mileage 0 was replaced with the lane median."
+        meta: {role: flag, group: mileage, synonyms: "imputed, imputada"}
+      - name: mileage_unresolved_flag
+        description: "True when mileage is still 0 because the lane has no other value."
+        meta: {role: flag, group: mileage}
+      - name: pnl_mismatch_flag
+        description: "True when reported pnl differs from raw book_price minus raw source_price."
+        meta: {role: flag, group: price, synonyms: "divergente, mismatch"}
+      - name: cancelled_nonzero_price_flag
+        description: "True when a cancelled load has a non-zero price."
+        meta: {role: flag, group: price}
+      - name: zero_price_active_flag
+        description: "True when a non-cancelled load has a zero price."
+        meta: {role: flag, group: price}
+      - name: price_analysis_exclude_flag
+        description: "True when zero_price_active_flag or cancelled_nonzero_price_flag is true; leave these loads out of price sums and averages."
+        meta: {role: flag, group: price, synonyms: "average, avg, mean, sum, total, média, media"}
+      - name: book_price_outlier_flag
+        description: "True when book_price is below the 1st or above the 99th percentile of non-zero values. Zeros and NULLs are never flagged."
+        meta: {role: flag, group: outlier, synonyms: "outlier, atípico"}
+      - name: source_price_outlier_flag
+        description: "True when source_price is below the 1st or above the 99th percentile of non-zero values. Zeros and NULLs are never flagged."
+        meta: {role: flag, group: outlier, synonyms: "outlier, atípico"}
+      - name: pnl_outlier_flag
+        description: "True when pnl is below the 1st or above the 99th percentile of non-zero values. Zeros and NULLs are never flagged."
+        meta: {role: flag, group: outlier, synonyms: "outlier, atípico"}
+
+  # ===========================================================================
+  - name: dim_shipper
+    description: "One row per shipper (customer)."
+    meta:
+      layer: marts
+      grain: "1 row per shipper_name"
+      synonyms: "shipper, customer, cliente, embarcador"
+    columns:
+      - name: shipper_id
+        description: "Surrogate key."
+        meta: {role: key}
+        data_tests: [unique, not_null]
+      - name: shipper_name
+        description: "Shipper name; show it instead of shipper_id in answers."
+        meta: {role: attribute}
+
+  # ===========================================================================
+  - name: dim_carrier
+    description: "One row per carrier (trucking company)."
+    meta:
+      layer: marts
+      grain: "1 row per carrier_name"
+      synonyms: "carrier, transportadora, transportador"
+    columns:
+      - name: carrier_id
+        description: "Surrogate key."
+        meta: {role: key}
+        data_tests: [unique, not_null]
+      - name: carrier_name
+        description: "Carrier name; show it instead of carrier_id in answers."
+        meta: {role: attribute}
+
+
+
+  # ===========================================================================
+  - name: dim_equipment
+    description: "One row per equipment type (truck or trailer type)."
+    meta:
+      layer: marts
+      grain: "1 row per equipment_type"
+      synonyms: "equipment, trailer, equipamento"
+    columns:
+      - name: equipment_id
+        description: "Surrogate key."
+        meta: {role: key}
+        data_tests: [unique, not_null]
+      - name: equipment_type
+        description: "Equipment type name."
+        meta: {role: attribute}
+
+  # ===========================================================================
+  - name: dim_date
+    description: "One row per calendar day; join on cast(fact_load.<date> as date) = date_day. Group months with year_month or date_trunc('month', date_day). Last, latest and
+        current periods are relative to max(delivery_date) in fact_load, never current_date.
+        Last full month: d = max(delivery_date)::date; if d is the last day of its month use that
+        month, else the previous month; filter delivery_date >= month_start and < month_start +
+        interval '1 month'. Period covered by the data means min to max delivery_date, every month
+        in between. For YoY or MoM aggregate by month first, then use lag(metric, 12) or
+        lag(metric, 1) over (order by year_month); growth % = (current - previous) /
+        nullif(previous, 0) * 100. Compare a partial month only with the same day range of the
+        previous period. Do not filter date_day = current_date unless the user asks for today."  
+    meta:
+      layer: marts
+      grain: "1 row per calendar day"
+      synonyms: "calendar, month, monthly, year, yearly, week, weekly, quarter, trend, period, over time, last month, last full month, latest month, mom, yoy, wow, mtd, ytd, mês, mensal, ano, anual, semana, trimestre, período, tendência, january, february, march, april, may, june, july, august, september, october, november, december, janeiro, fevereiro, março, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro. " 
+    columns:
+      - name: date_day
+        description: "Calendar date; primary key."
+        meta: {role: key}
+        data_tests: [unique, not_null]
+      - name: year
+        description: "Four-digit calendar year."
+        meta: {role: attribute}
+      - name: month
+        description: "Month number, 1 to 12."
+        meta: {role: attribute}
+      - name: year_month
+        description: "Text YYYY-MM; the monthly grouping key."
+        meta: {role: attribute}
+      - name: day_of_week
+        description: "Postgres day of week, 0 is Sunday and 6 is Saturday."
+        meta: {role: attribute}

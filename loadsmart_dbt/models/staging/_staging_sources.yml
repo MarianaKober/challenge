@@ -1,0 +1,15 @@
+version: 2
+sources:
+  - name: raw
+    schema: raw
+    tables:
+      - name: loads
+        description: "Export bruto de loads, exatamente como veio do sistema de origem."
+        columns:
+          - name: has_mobile_app_tracking_1
+            description: "Segunda coluna has_mobile_app_tracking do CSV (pandas: .1). Não é carregada no staging."
+            data_tests:
+              - accepted_values:
+                  values: [false]
+                  quote: false
+                  config: {severity: warn}

@@ -1,0 +1,8 @@
+question,generated_sql,answer,error
+Which 5 shippers have the lowest total pnl among delivered loads?,"SELECT s.shipper_name, SUM(f.pnl) AS total_pnl
+FROM loadsmart_dev.analytics.fact_load f
+JOIN loadsmart_dev.analytics.dim_shipper s ON f.shipper_id = s.shipper_id
+WHERE f.is_delivered = TRUE
+GROUP BY s.shipper_name
+ORDER BY total_pnl ASC
+LIMIT 5;","[{'shipper_name': 'Shipper 1528', 'total_pnl': -13549.21}, {'shipper_name': 'Shipper 758', 'total_pnl': -10227.6}, {'shipper_name': 'Shipper 810', 'total_pnl': -3742.08}, {'shipper_name': 'Shipper 1501', 'total_pnl': -3031.94}, {'shipper_name': 'Shipper 1298', 'total_pnl': -2748.18}]",

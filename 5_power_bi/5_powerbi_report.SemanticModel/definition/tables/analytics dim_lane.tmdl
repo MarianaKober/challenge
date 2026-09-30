@@ -1,0 +1,86 @@
+table 'analytics dim_lane'
+	lineageTag: d8501cb7-9436-4ba2-ab4a-ec331b075e64
+
+	column lane_id
+		dataType: string
+		lineageTag: 245814d5-379d-486f-b366-518a0d1e3bbe
+		summarizeBy: none
+		sourceColumn: lane_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column lane
+		dataType: string
+		lineageTag: 0bb26261-ac1a-40d6-99ce-9b5bfe8d1f59
+		summarizeBy: none
+		sourceColumn: lane
+
+		annotation SummarizationSetBy = Automatic
+
+	column pickup_city
+		dataType: string
+		lineageTag: 289e9fd4-f412-48b4-8c10-e2d7cdc78512
+		summarizeBy: none
+		sourceColumn: pickup_city
+
+		annotation SummarizationSetBy = Automatic
+
+	column pickup_state
+		dataType: string
+		lineageTag: bd4f859b-94f2-4572-8cfd-f7d729c5ad4f
+		summarizeBy: none
+		sourceColumn: pickup_state
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivery_city
+		dataType: string
+		lineageTag: 7093c848-61d5-45b9-8d0a-2b0c9f8305d3
+		summarizeBy: none
+		sourceColumn: delivery_city
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivery_state
+		dataType: string
+		lineageTag: dc75688f-be18-4f3e-854d-e465a1d730c1
+		summarizeBy: none
+		sourceColumn: delivery_state
+
+		annotation SummarizationSetBy = Automatic
+
+	column pickup_state_name
+		dataType: string
+		lineageTag: dd1efa3e-b0ea-4377-bf0d-fbfb4cc8d8ea
+		summarizeBy: none
+		sourceColumn: pickup_state_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivery_state_name
+		dataType: string
+		lineageTag: 042b49e2-4045-4a58-b21b-f08d379504bc
+		summarizeBy: none
+		sourceColumn: delivery_state_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column lane_type
+		dataType: string
+		lineageTag: a5fe08a2-9afc-4cad-9d67-2f26e89f7ef2
+		summarizeBy: none
+		sourceColumn: lane_type
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'analytics dim_lane' = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("localhost", "loadsmart_dev"),
+				    analytics_dim_lane = Fonte{[Schema="analytics",Item="dim_lane"]}[Data]
+				in
+				    analytics_dim_lane
+
+	annotation PBI_ResultType = Table
+

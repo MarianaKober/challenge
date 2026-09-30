@@ -1,0 +1,43 @@
+table Medidas
+	lineageTag: ff67065e-32ef-4057-abc6-76d15653d9fe
+
+	measure 'Delivered Loads' = CALCULATE(DISTINCTCOUNT('analytics fact_load'[loadsmart_id]), 'analytics fact_load'[is_delivered] = TRUE())
+		formatString: 0
+		lineageTag: 5a536cc8-b8dd-4895-b164-e31d52392f2f
+
+	measure 'Canceled Loads Qtd' = CALCULATE([Delivered Loads],'analytics fact_load'[load_was_cancelled]=TRUE())
+		formatString: 0
+		lineageTag: 2407d593-50ad-48f6-93f8-d4df408e4d70
+
+	measure PLN = SUM('analytics fact_load'[pnl_calculated])
+		lineageTag: 6640a9e4-3504-430e-a758-ab2443015069
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Book Price' = SUM('analytics fact_load'[book_price])
+		lineageTag: 0ec2f87b-c3a7-43d3-8aab-62aae80fda75
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Source Price' = SUM('analytics fact_load'[source_price])
+		lineageTag: 380df6e6-08a2-473a-9c3c-3383cc4af51a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Book Price' = AVERAGE('analytics fact_load'[book_price])
+		lineageTag: 39c503b4-18aa-4ca0-a516-1129cdfbe4e9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Medidas = m
+		mode: import
+		source =
+				let
+				    Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#"Coluna 1" = _t]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(Fonte,{{"Coluna 1", type text}}),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Tipo Alterado",{"Coluna 1"})
+				in
+				    #"Colunas Removidas"
+
+	annotation PBI_ResultType = Table
+

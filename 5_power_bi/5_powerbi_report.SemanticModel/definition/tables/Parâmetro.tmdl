@@ -1,0 +1,50 @@
+table Parâmetro
+	lineageTag: bb4bb5c5-aab2-42f9-bc9b-a9e8e6514f26
+
+	column Parâmetro
+		lineageTag: fe347ecd-081f-4f64-b0a4-c5162f486ded
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parâmetro Pedido'
+
+		relatedColumnDetails
+			groupByColumn: 'Parâmetro Campos'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parâmetro Campos'
+		isHidden
+		lineageTag: 7b240376-faf6-428a-acc6-e6f1719d26c3
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parâmetro Pedido'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parâmetro Pedido'
+		isHidden
+		formatString: 0
+		lineageTag: 0cdea238-039a-4895-828c-5991c1bf0fa4
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Parâmetro = calculated
+		mode: import
+		source =
+				{
+				    ("Total Book Price", NAMEOF('Medidas'[Total Book Price]), 0),
+				    ("Loads Qtd", NAMEOF('Medidas'[Delivered Loads]), 2),
+				    ("PLN", NAMEOF('Medidas'[PLN]), 3),
+				    ("Avg Book Price", NAMEOF([Avg Book Price]),1)
+				}
+
+	annotation PBI_Id = e3f7331202394570a272cfba7f9583f4
+

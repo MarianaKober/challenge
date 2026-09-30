@@ -1,0 +1,32 @@
+table 'analytics dim_carrier'
+	lineageTag: 43ff84f6-57cb-427a-bdfc-d87871c3e9ed
+
+	column carrier_id
+		dataType: string
+		lineageTag: a4223622-2593-4133-b08d-9ab218c1975a
+		summarizeBy: none
+		sourceColumn: carrier_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column carrier_name
+		dataType: string
+		lineageTag: 57ec617e-4210-442e-a62c-7c9e4a8e51f3
+		summarizeBy: none
+		sourceColumn: carrier_name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'analytics dim_carrier' = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("localhost", "loadsmart_dev"),
+				    analytics_dim_carrier = Fonte{[Schema="analytics",Item="dim_carrier"]}[Data]
+				in
+				    analytics_dim_carrier
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

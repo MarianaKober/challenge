@@ -1,0 +1,30 @@
+table 'analytics dim_shipper'
+	lineageTag: babc30e0-ea8a-4f73-8f9e-4d781d997971
+
+	column shipper_id
+		dataType: string
+		lineageTag: 0bd12301-46d3-484c-a7d5-8662b6f368f0
+		summarizeBy: none
+		sourceColumn: shipper_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column shipper_name
+		dataType: string
+		lineageTag: 1d62777a-8d6d-403a-a26d-9e4d593b893b
+		summarizeBy: none
+		sourceColumn: shipper_name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'analytics dim_shipper' = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("localhost", "loadsmart_dev"),
+				    analytics_dim_shipper = Fonte{[Schema="analytics",Item="dim_shipper"]}[Data]
+				in
+				    analytics_dim_shipper
+
+	annotation PBI_ResultType = Table
+

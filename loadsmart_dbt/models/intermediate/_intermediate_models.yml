@@ -1,0 +1,29 @@
+version: 2
+models:
+  - name: int_loads_unique
+    description: >
+      Deduplicated loads with imputed mileage, dimension keys, and
+      exclude_from_fact_flag / fact_exclusion_reasons. It does not remove rows:
+      the fact table and dimensions filter them, so excluded loads stay here for audit.
+    columns:
+      - name: loadsmart_id
+        data_tests: [unique, not_null]
+      - name: mileage_raw
+        description: "Mileage as it came from raw, before imputation. Not carried to fact_load."
+      - name: mileage_final
+        description: "Mileage after imputation; becomes fact_load.mileage."
+      - name: mileage_imputed_flag
+        description: "True when a mileage of 0 on a non-cancelled load was replaced with the lane median."
+      - name: mileage_unresolved_flag
+        description: "True when mileage is 0 on a non-cancelled load and the lane has no other value to use."
+      - name: any_date_order_flag
+        description: "True when at least one of the ten date-order flags is true. Not carried to fact_load."
+      - name: fact_exclusion_reasons
+        description: "Array with the reasons the load is left out of fact_load: pickup_after_delivery and lane_format_invalid."
+      - name: exclude_from_fact_flag
+        description: "True when fact_exclusion_reasons is not empty."
+  - name: int_price_outlier_bounds
+    description: >
+      One row with the global outlier bounds for book_price, source_price and pnl: percentile_cont at the quantiles
+      set by vars outlier_lower_quantile and outlier_upper_quantile (0.01 and 0.99), over the non-zero values of the
+      loads that are in fact_load and are not price_analysis_exclude_flag.

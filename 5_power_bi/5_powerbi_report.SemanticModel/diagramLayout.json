@@ -1,0 +1,161 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 1005.3333129882813,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 226.02998082187963,
+            "y": -50
+          },
+          "nodeIndex": "analytics dim_carrier",
+          "nodeLineageTag": "43ff84f6-57cb-427a-bdfc-d87871c3e9ed",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 856.81288763521957,
+            "y": 266.66583242687011
+          },
+          "nodeIndex": "analytics dim_date",
+          "nodeLineageTag": "63494492-ac62-49bd-b8bb-b8577a4a8ab7",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 337.1607140514754,
+            "y": 555.33166485374022
+          },
+          "nodeIndex": "analytics dim_equipment",
+          "nodeLineageTag": "96a562bf-40b8-4f0e-b055-d50b21b30ed5",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 622.81288763521957,
+            "y": -32.389461450433373
+          },
+          "nodeIndex": "analytics dim_lane",
+          "nodeLineageTag": "d8501cb7-9436-4ba2-ab4a-ec331b075e64",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 377.67998444799656
+          },
+          "nodeIndex": "analytics dim_shipper",
+          "nodeLineageTag": "babc30e0-ea8a-4f73-8f9e-4d781d997971",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 337.06937023549131,
+            "y": 203.21518376834786
+          },
+          "nodeIndex": "analytics fact_load",
+          "nodeLineageTag": "24ba4bb1-0ca4-4c9c-bfc3-515ee718478f",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1090.8128876352196,
+            "y": 314.66583242687011
+          },
+          "nodeIndex": "Medidas",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2026.8128876352196,
+            "y": 290.66583242687011
+          },
+          "nodeIndex": "Parâmetro",
+          "nodeLineageTag": "bb4bb5c5-aab2-42f9-bc9b-a9e8e6514f26",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2260.8128876352193,
+            "y": 290.66583242687011
+          },
+          "nodeIndex": "X",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2494.8128876352193,
+            "y": 290.66583242687011
+          },
+          "nodeIndex": "Y1",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2728.8128876352193,
+            "y": 290.66583242687011
+          },
+          "nodeIndex": "Y2",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Todas as tabelas",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Todas as tabelas",
+  "defaultDiagram": "Todas as tabelas"
+}

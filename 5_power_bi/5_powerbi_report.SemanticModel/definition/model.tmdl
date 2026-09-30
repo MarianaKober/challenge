@@ -1,0 +1,35 @@
+model Model
+	culture: pt-BR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: pt-BR
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["analytics dim_carrier","analytics dim_date","analytics dim_equipment","analytics dim_lane","analytics fact_load","analytics dim_shipper","Medidas"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table 'analytics dim_carrier'
+ref table 'analytics dim_date'
+ref table DateTableTemplate_30a85a35-798e-4137-bfb1-114c6fb8d97b
+ref table LocalDateTable_8d87892d-0fda-4e0b-a911-1a6adb8f65ac
+ref table 'analytics dim_equipment'
+ref table 'analytics dim_lane'
+ref table 'analytics fact_load'
+ref table LocalDateTable_4ad5b92a-8bd5-4583-b27d-ca3fbbef7c26
+ref table LocalDateTable_8c0e8a9a-dd1e-456d-98c3-0da17ccb4237
+ref table LocalDateTable_2b4f2046-6ef7-4e65-82b5-dbf66e5d7b41
+ref table LocalDateTable_52c8b973-d266-47f5-bbf8-2724200518da
+ref table 'analytics dim_shipper'
+ref table Medidas
+ref table Parâmetro
+ref table X
+ref table Y1
+ref table Y2
+
+ref cultureInfo pt-BR
+

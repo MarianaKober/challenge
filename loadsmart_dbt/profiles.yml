@@ -1,0 +1,30 @@
+loadsmart_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DBT_PG_HOST', 'localhost') }}"
+      port: "{{ env_var('DBT_PG_PORT', '5432') | as_number }}"
+      user: "{{ env_var('DBT_PG_USER', 'postgres') }}"
+      password: "{{ env_var('DBT_PG_PASSWORD') }}"
+      dbname: loadsmart_dev
+      schema: analytics
+      threads: 4
+    ci:
+      type: postgres
+      host: "{{ env_var('DBT_PG_HOST', 'localhost') }}"
+      port: "{{ env_var('DBT_PG_PORT', '5432') | as_number }}"
+      user: "{{ env_var('DBT_PG_USER', 'postgres') }}"
+      password: "{{ env_var('DBT_PG_PASSWORD') }}"
+      dbname: loadsmart_dev
+      schema: "{{ env_var('DBT_CI_SCHEMA_PREFIX', 'ci_local') }}"
+      threads: 4
+    prod:
+      type: postgres
+      host: "{{ env_var('DBT_PG_HOST', 'localhost') }}"
+      port: "{{ env_var('DBT_PG_PORT', '5432') | as_number }}"
+      user: "{{ env_var('DBT_PG_USER', 'postgres') }}"
+      password: "{{ env_var('DBT_PG_PASSWORD') }}"
+      dbname: loadsmart_prod
+      schema: analytics
+      threads: 4
